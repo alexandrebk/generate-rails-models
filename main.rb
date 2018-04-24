@@ -41,3 +41,23 @@ ap output
 write_output(model_of_model, "#{File.dirname(__FILE__)}/command.sh")
 
 
+# sortie de la première fonction
+# [ hash, hash ]
+# hash : {
+#   name_table: ,
+#   fields: [
+#     {
+#     namefield: column1
+#     type: integer
+#     },
+#     {
+#     namefield: column2
+#     type: text
+#     },
+#     {
+#     namefield: column3
+#     type:
+#     },
+#   ]
+# }
+
