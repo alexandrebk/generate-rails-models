@@ -1,5 +1,5 @@
 require 'awesome_print'
-
+test
 def read_files(path)
   file = File.read(path)
   return file
