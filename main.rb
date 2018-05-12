@@ -1,5 +1,7 @@
 require 'awesome_print'
-test
+require 'pry'
+      # binding.pry # to start debugging
+
 def read_files(path)
   file = File.read(path)
   return file
@@ -11,53 +13,58 @@ def write_output(output, path)
   end
 end
 
-text = read_files("#{File.dirname(__FILE__)}/db.xml")
 
-model_of_model = "rails generate model "
-
-
-# array = text.gsub("\\",'').split("<table")
-
-array = text.split("<table")
-
-array.shift
-
-output = []
-
-ap array
-
-array.each do |table|
-  names = table.scan(/name="(\w+)"/)
-  types = table.scan(/<datatype>(\w+)<\/datatype>/)
-  p names.flatten!
-  p types.flatten!
-  output << names
+class Table
+  attr_accessor :name
+  def initialize(table_name)
+      @name = table_name 
+  end
 end
 
-ap output
+class Field
+  attr_accessor :name, :table, :type, :allow_null, :autoincrement, :default_value 
+  def initialize(field_name, table, type)
+      if table.class.name != "Table"
+        puts "Erreur : la variable table n'est pas un objet de type Table"
+      end
+      @name = field_name 
+      @table = table 
+      @type = type 
+  end
+end
 
-# transofmer le texte
 
-write_output(model_of_model, "#{File.dirname(__FILE__)}/command.sh")
+  # 1st part - Analyze the input text in order to find tables and fields 
+  #    Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
 
+text = read_files("#{File.dirname(__FILE__)}/db.xml")  #.gsub(/\r\n?/, " ")
 
-# sortie de la première fonction
-# [ hash, hash ]
-# hash : {
-#   name_table: ,
-#   fields: [
-#     {
-#     namefield: column1
-#     type: integer
-#     },
-#     {
-#     namefield: column2
-#     type: text
-#     },
-#     {
-#     namefield: column3
-#     type:
-#     },
-#   ]
-# }
+tables = Array.new
+fields = Array.new
+
+tables_content = Array.new   # array of texts between <table ...> and </table>
+tables_content = text.scan(/<table(.*?)<\/table>/m)     # /m option : allow the search across several lines
+
+tables_content.each do |table_content|
+    table_name = table_content[0].scan(/name="(\w+)"/).flatten[0]
+    tables << Table.new(table_name)
+
+    fields_content = Array.new   # array of texts between <row ...> and </row> for this table
+    fields_content = table_content[0].scan(/<row(.*?)<\/row>/m)
+    fields_content.each do |field_content|
+      field_name = field_content[0].scan(/name="(\w+)"/).flatten[0]
+      field_type = field_content[0].scan(/<datatype>(\w+)<\/datatype>/).flatten[0]
+      fields << Field.new(field_name, tables[-1], field_type)
+    end
+end
+
+# Printout :
+tables.each do |table|
+    puts table.name
+    fields.each do |field|
+      puts "       " + field.name + " " + field.type if field.table == table 
+    end
+end
+
+    # 2nd part : use the 'tables' and 'fields' array to build models in YAML language for Rails
 
