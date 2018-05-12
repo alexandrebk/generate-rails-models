@@ -33,6 +33,36 @@ class Field
   end
 end
 
+  # Initialization - types of data
+  # the hashcode array equivalent_type contains the equivalence between SQL types and Rails types
+ equivalent_type = {
+    "INTEGER":"integer",
+    "TINYINT":"integer",
+    "SMALLINT":"integer",
+    "MEDIUMINT":"integer",
+    "INT":"integer",
+    "BIGINT":"integer",
+    "DECIMAL":"decimal",
+    "FLOAT":"float",
+    "DOUBLE":"float",
+  
+    "CHAR":"string",
+    "VARCHAR":"text",
+    "MEDIUMTEXT":"text",
+    "BINARY":"binary",
+    "VARBINARY":"binary",
+    "BLOB":"text",
+  
+    "DATE":"date",
+    "TIME":"time",
+    "DATETIME":"datetime",
+    "YEAR":"date",
+    "TIMESTAMP":"timestamp",
+  
+    "ENUM":"string",
+    "SET":"integer",
+    "bit":"string"}
+
 
   # 1st part - Analyze the input text in order to find tables and fields 
   #    Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
@@ -66,5 +96,25 @@ tables.each do |table|
     end
 end
 
-    # 2nd part : use the 'tables' and 'fields' array to build models in YAML language for Rails
+    # 2nd part : use the 'tables' and 'fields' array to build models in language for Rails
+    #   command_line will contain the Rails command
 
+tables.each do |table|
+  # Table name should be transformed to have upper first letter and no "s" at the end
+    if table.name[table.name.length-1] == "s" 
+      modified_table_name = table.name[0, table.name.length-1].capitalize
+    else
+      modified_table_name = table.name.capitalize
+    end
+    command_line = "rails generate model " + modified_table_name 
+    fields.each do |field|
+      command_line = command_line + " " + field.name + ":" + equivalent_type[field.type.to_sym] if field.table == table 
+    end
+    puts " "
+    puts command_line
+end
+
+# Autres commandes Rails :
+# $ rails generate migration AddPartNumberToProducts part_number:string
+# ou : $ rails generate migration AddDetailsToProducts part_number:string price:decimal
+# $ rails generate migration RemovePartNumberFromProducts part_number:string
