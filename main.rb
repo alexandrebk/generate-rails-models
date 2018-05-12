@@ -44,16 +44,26 @@ text = read_files("#{File.dirname(__FILE__)}/db.xml")  #.gsub(/\r\n?/, " ")
 tables = Array.new
 columns = Array.new
 
-tables_content = Array.new   # array of texts between <table> and </table>
+tables_content = Array.new   # array of texts between <table ...> and </table>
 tables_content = text.scan(/<table(.*?)<\/table>/m)
 
 puts "nombre de tables " + tables_content.count.to_s
 # puts tables_tag_texts
 
 tables_content.each do |table_content|
-    table_name = table_content.flatten[0].scan(/name="(\w+)"/)
-
+    table_name = table_content.flatten[0].scan(/name="(\w+)"/).flatten[0]
+    tables << Table.new(table_name)
     puts " "
-    puts "nouvelle table :" + table_name.flatten[0]
-    puts table_content
+    puts "nouvelle table :" + table_name
+
+    rows_content = Array.new   # array of texts between <row ...> and </row>
+    rows_content = text.scan(/<row(.*?)<\/row>/m)
+    rows_content.each do |row_content|
+      row_name = row_content.flatten[0].scan(/name="(\w+)"/).flatten[0]
+      row_type = row_content.flatten[0].scan(/<datatype>(\w+)<\/datatype>/).flatten[0]
+      columns << Column.new(row_name, table_name, row_type)
+      puts "    Champ : " + row_name + "    de type : " + row_type
+    end
+
+#    puts table_content
 end
