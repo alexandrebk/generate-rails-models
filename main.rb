@@ -17,19 +17,19 @@ end
 class Table
   attr_accessor :name
   def initialize(table_name)
-      @name = table_name 
+      @name = table_name
   end
 end
 
 class Field
-  attr_accessor :name, :table, :type, :allow_null, :autoincrement, :default_value 
+  attr_accessor :name, :table, :type, :allow_null, :autoincrement, :default_value
   def initialize(field_name, table, type)
       if table.class.name != "Table"
         puts "Erreur : la variable table n'est pas un objet de type Table"
       end
-      @name = field_name 
-      @table = table 
-      @type = type 
+      @name = field_name
+      @table = table
+      @type = type
   end
 end
 
@@ -45,26 +45,26 @@ end
     "DECIMAL":"decimal",
     "FLOAT":"float",
     "DOUBLE":"float",
-  
+
     "CHAR":"string",
     "VARCHAR":"text",
     "MEDIUMTEXT":"text",
     "BINARY":"binary",
     "VARBINARY":"binary",
     "BLOB":"text",
-  
+
     "DATE":"date",
     "TIME":"time",
     "DATETIME":"datetime",
     "YEAR":"date",
     "TIMESTAMP":"timestamp",
-  
+
     "ENUM":"string",
     "SET":"integer",
     "bit":"string"}
 
 
-  # 1st part - Analyze the input text in order to find tables and fields 
+  # 1st part - Analyze the input text in order to find tables and fields
   #    Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
 
 text = read_files("#{File.dirname(__FILE__)}/db.xml")  #.gsub(/\r\n?/, " ")
@@ -92,27 +92,37 @@ end
 tables.each do |table|
     puts table.name
     fields.each do |field|
-      puts "       " + field.name + " " + field.type if field.table == table 
+      puts "       " + field.name + " " + field.type if field.table == table
     end
 end
 
     # 2nd part : use the 'tables' and 'fields' array to build models in language for Rails
     #   command_line will contain the Rails command
 
+final_string = ""
+
 tables.each do |table|
   # Table name should be transformed to have upper first letter and no "s" at the end
-    if table.name[table.name.length-1] == "s" 
+    if table.name[table.name.length-1] == "s"
       modified_table_name = table.name[0, table.name.length-1].capitalize
     else
       modified_table_name = table.name.capitalize
     end
-    command_line = "rails generate model " + modified_table_name 
+    command_line = "rails generate model " + modified_table_name
     fields.each do |field|
-      command_line = command_line + " " + field.name + ":" + equivalent_type[field.type.to_sym] if field.table == table 
+      command_line = command_line + " " + field.name + ":" + equivalent_type[field.type.to_sym] if field.table == table
     end
+    command_line += " \n"
     puts " "
     puts command_line
+    final_string += command_line
 end
+    puts "---------"
+    puts final_string
+
+puts "Write output"
+
+write_output(final_string, "#{File.dirname(__FILE__)}/command_ruby_for_terminal.sh")
 
 # Autres commandes Rails :
 # $ rails generate migration AddPartNumberToProducts part_number:string
