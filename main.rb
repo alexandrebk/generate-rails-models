@@ -13,6 +13,28 @@ def write_output(output, path)
   end
 end
 
+def analyze_input_text(text)
+  # analyse the text in order to fill two arrays 'tables' (objects Table) and 'fields' (objects Field)
+  tables = Array.new
+  fields = Array.new
+
+  tables_content = Array.new   # array of texts between <table ...> and </table>
+  tables_content = text.scan(/<table(.*?)<\/table>/m)     # /m option : allow the search across several lines
+
+  tables_content.each do |table_content|
+      table_name = table_content[0].scan(/name="(\w+)"/).flatten[0]
+      tables << Table.new(table_name)
+
+      fields_content = Array.new   # array of texts between <row ...> and </row> for this table
+      fields_content = table_content[0].scan(/<row(.*?)<\/row>/m)
+      fields_content.each do |field_content|
+        field_name = field_content[0].scan(/name="(\w+)"/).flatten[0]
+        field_type = field_content[0].scan(/<datatype>(\w+)<\/datatype>/).flatten[0]
+        fields << Field.new(field_name, tables[-1], field_type)
+      end
+  end
+  return {tables: tables, fields: fields}
+end
 
 class Table
   attr_accessor :name
@@ -64,34 +86,28 @@ end
     "bit":"string"}
 
 
-  # 1st part - Analyze the input text in order to find tables and fields
-  #    Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
+  # 1st part - Analyze the two input files in order to find new tables and fields and previous version of them
+  #    Description of tables and fields will be put in arrays 'new_tables' or 'old_tables' (objects Table)
+  #    and 'new_fields' or "old_fields" (objects Field)
 
-text = read_files("#{File.dirname(__FILE__)}/db.xml")  #.gsub(/\r\n?/, " ")
+# read and analyse new file :
+text = read_files("#{File.dirname(__FILE__)}/db.xml") 
 
-tables = Array.new
-fields = Array.new
+result = analyze_input_text(text)
+new_tables = result[:tables]
+new_fields = result[:fields]
 
-tables_content = Array.new   # array of texts between <table ...> and </table>
-tables_content = text.scan(/<table(.*?)<\/table>/m)     # /m option : allow the search across several lines
+# read and analyse previous file :
+text = read_files("#{File.dirname(__FILE__)}/db_old.xml") 
 
-tables_content.each do |table_content|
-    table_name = table_content[0].scan(/name="(\w+)"/).flatten[0]
-    tables << Table.new(table_name)
-
-    fields_content = Array.new   # array of texts between <row ...> and </row> for this table
-    fields_content = table_content[0].scan(/<row(.*?)<\/row>/m)
-    fields_content.each do |field_content|
-      field_name = field_content[0].scan(/name="(\w+)"/).flatten[0]
-      field_type = field_content[0].scan(/<datatype>(\w+)<\/datatype>/).flatten[0]
-      fields << Field.new(field_name, tables[-1], field_type)
-    end
-end
+result = analyze_input_text(text)
+old_tables = result[:tables]
+old_fields = result[:fields]
 
 # Printout :
-tables.each do |table|
+old_tables.each do |table|
     puts table.name
-    fields.each do |field|
+    old_fields.each do |field|
       puts "       " + field.name + " " + field.type if field.table == table
     end
 end
@@ -102,6 +118,7 @@ end
 final_string = ""
 
 tables.each do |table|
+
   # Table name should be transformed to have upper first letter and no "s" at the end
     if table.name[table.name.length-1] == "s"
       modified_table_name = table.name[0, table.name.length-1].capitalize
