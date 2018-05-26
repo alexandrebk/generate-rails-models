@@ -99,7 +99,7 @@ end
     # 2nd part : use the 'tables' and 'fields' array to build models in language for Rails
     #   command_line will contain the Rails command
 
-final_string = ""
+final_string = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit \nhub create \n"
 
 tables.each do |table|
   # Table name should be transformed to have upper first letter and no "s" at the end
@@ -117,8 +117,11 @@ tables.each do |table|
     puts command_line
     final_string += command_line
 end
-    puts "---------"
-    puts final_string
+
+final_string += "rails db:create \nrails db:migrate"
+
+puts "---------"
+puts final_string
 
 puts "Write output"
 
