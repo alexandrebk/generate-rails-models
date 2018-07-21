@@ -1,10 +1,11 @@
+require_relative 'models/field'
+require_relative 'models/table'
 require 'awesome_print'
 require 'pry'
-      # binding.pry # to start debugging
+# binding.pry # to start debugging
 
 def read_files(path)
-  file = File.read(path)
-  return file
+  File.read(path)
 end
 
 def write_output(output, path)
@@ -13,59 +14,38 @@ def write_output(output, path)
   end
 end
 
+# Initialization - types of data
+# the hashcode array equivalent_type contains the equivalence between SQL types and Rails types
 
-class Table
-  attr_accessor :name
-  def initialize(table_name)
-      @name = table_name
-  end
-end
-
-class Field
-  attr_accessor :name, :table, :type, :allow_null, :autoincrement, :default_value
-  def initialize(field_name, table, type)
-      if table.class.name != "Table"
-        puts "Erreur : la variable table n'est pas un objet de type Table"
-      end
-      @name = field_name
-      @table = table
-      @type = type
-  end
-end
-
-  # Initialization - types of data
-  # the hashcode array equivalent_type contains the equivalence between SQL types and Rails types
- equivalent_type = {
-    "INTEGER":"integer",
-    "TINYINT":"integer",
-    "SMALLINT":"integer",
-    "MEDIUMINT":"integer",
-    "INT":"integer",
-    "BIGINT":"integer",
-    "DECIMAL":"decimal",
-    "FLOAT":"float",
-    "DOUBLE":"float",
-
-    "CHAR":"string",
-    "VARCHAR":"text",
-    "MEDIUMTEXT":"text",
-    "BINARY":"binary",
-    "VARBINARY":"binary",
-    "BLOB":"text",
-
-    "DATE":"date",
-    "TIME":"time",
-    "DATETIME":"datetime",
-    "YEAR":"date",
-    "TIMESTAMP":"timestamp",
-
-    "ENUM":"string",
-    "SET":"integer",
-    "bit":"string"}
+equivalent_type = {
+  "INTEGER":"integer",
+  "TINYINT":"integer",
+  "SMALLINT":"integer",
+  "MEDIUMINT":"integer",
+  "INT":"integer",
+  "BIGINT":"integer",
+  "DECIMAL":"decimal",
+  "FLOAT":"float",
+  "DOUBLE":"float",
+  "CHAR":"string",
+  "VARCHAR":"text",
+  "MEDIUMTEXT":"text",
+  "BINARY":"binary",
+  "VARBINARY":"binary",
+  "BLOB":"text",
+  "DATE":"date",
+  "TIME":"time",
+  "DATETIME":"datetime",
+  "YEAR":"date",
+  "TIMESTAMP":"timestamp",
+  "ENUM":"string",
+  "SET":"integer",
+  "bit":"string"
+}
 
 
-  # 1st part - Analyze the input text in order to find tables and fields
-  #    Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
+# 1st part - Analyze the input text in order to find tables and fields
+# Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
 
 text = read_files("#{File.dirname(__FILE__)}/db.xml")  #.gsub(/\r\n?/, " ")
 
@@ -96,8 +76,8 @@ tables.each do |table|
     end
 end
 
-    # 2nd part : use the 'tables' and 'fields' array to build models in language for Rails
-    #   command_line will contain the Rails command
+# 2nd part : use the 'tables' and 'fields' array to build models in language for Rails
+#   command_line will contain the Rails command
 
 final_string = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit \nhub create \n"
 
@@ -125,7 +105,7 @@ puts final_string
 
 puts "Write output"
 
-write_output(final_string, "#{File.dirname(__FILE__)}/command_ruby_for_terminal.sh")
+write_output(final_string, "#{File.dirname(__FILE__)}/rails.sh")
 
 # Autres commandes Rails :
 # $ rails generate migration AddPartNumberToProducts part_number:string
