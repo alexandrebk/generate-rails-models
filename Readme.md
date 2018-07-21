@@ -2,7 +2,7 @@
 
 This tools help you building your own website easily
 
-You just have to know somme how to draw a DataBase and we'll take care of the rest.
+You just have to know how to draw a DataBase and we'll take care of the rest.
 
 Give us your xml schema database and we'll make a website with it.
 
