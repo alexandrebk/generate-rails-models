@@ -17,3 +17,5 @@ TO DO LIST:
 * Integrate modifications of Database after creating the app
 * Update modifications
 * Admin interface on the website
+
+* Attention à toujours créer en 1er la table qui n'a pas de clés étrangères.
