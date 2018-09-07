@@ -21,23 +21,28 @@ end
 
 database_drawing = read_files("#{File.dirname(__FILE__)}/db/db.xml")  #.gsub(/\r\n?/, " ")
 
-tables = Array.new
-fields = Array.new
+tables           = Array.new
+fields           = Array.new
 
-tables_content = Array.new                                          # array of texts between <table ...> and </table>
-tables_content = database_drawing.scan(/<table(.*?)<\/table>/m)     # /m option : allow the search across several lines
+tables_content   = Array.new                                          # array of texts between <table ...> and </table>
+tables_content   = database_drawing.scan(/<table(.*?)<\/table>/m)     # /m option : allow the search across several lines
+
+puts "tables_content"
+ap tables_content
 
 tables_content.each do |table_content|
     table_name = table_content[0].scan(/name="(\w+)"/).flatten[0]
     tables << Table.new(table_name)
     fields_content = Array.new   # array of texts between <row ...> and </row> for this table
     fields_content = table_content[0].scan(/<row(.*?)<\/row>/m)
+
     fields_content.each do |field_content|
       field_name = field_content[0].scan(/name="(\w+)"/).flatten[0]
       field_type = field_content[0].scan(/<datatype>(\w+)<\/datatype>/).flatten[0]
       fields << Field.new(field_name, tables[-1], field_type)
     end
 end
+
 
 # Print Tables:
 tables.each do |table|
@@ -51,15 +56,17 @@ end
 # Use the 'tables' and 'fields' array to build models in language for Rails
 # command_line will contain the Rails command
 
-shell_rails = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit \nhub create \n"
+shell_rails = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
 
 tables.each do |table|
   # Table name should be transformed to have upper first letter and no "s" at the end
-    if table.name[table.name.length-1] == "s"
-      modified_table_name = table.name[0, table.name.length-1].capitalize
-    else
-      modified_table_name = table.name.capitalize
-    end
+    p table.name[table.name.length-1] == "s"
+    modified_table_name = table.name[-1] == "s" ? table.name[0, table.name.length-1].capitalize : table.name.capitalize
+    # if table.name[table.name.length-1] == "s"
+    #   modified_table_name = table.name[0, table.name.length-1].capitalize
+    # else
+    #   modified_table_name = table.name.capitalize
+    # end
     command_line = "rails generate model " + modified_table_name
     fields.each do |field|
       command_line = command_line + " " + field.name + ":" + EQUIVALENCE_TYPE[field.type.to_sym] if field.table == table

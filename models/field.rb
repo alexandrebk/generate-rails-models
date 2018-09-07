@@ -5,8 +5,8 @@ class Field
     if table.class.name != 'Table'
       puts "Erreur: la variable table n'est pas un objet de type Table"
     end
-    @name = field_name
+    @name  = field_name
     @table = table
-    @type = type
+    @type  = type
   end
 end
