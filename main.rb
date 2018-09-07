@@ -1,8 +1,8 @@
 require_relative 'models/field'
 require_relative 'models/table'
 require_relative 'db/equivalence'
-require 'awesome_print'
-require 'pry'
+# require 'awesome_print'
+# require 'pry'
 # binding.pry # to start debugging
 
 def read_files(path)
@@ -26,9 +26,6 @@ fields           = Array.new
 
 tables_content   = Array.new                                          # array of texts between <table ...> and </table>
 tables_content   = database_drawing.scan(/<table(.*?)<\/table>/m)     # /m option : allow the search across several lines
-
-puts "tables_content"
-ap tables_content
 
 tables_content.each do |table_content|
     table_name = table_content[0].scan(/name="(\w+)"/).flatten[0]
@@ -60,21 +57,19 @@ shell_rails = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit in
 
 tables.each do |table|
   # Table name should be transformed to have upper first letter and no "s" at the end
-    p table.name[table.name.length-1] == "s"
-    modified_table_name = table.name[-1] == "s" ? table.name[0, table.name.length-1].capitalize : table.name.capitalize
-    # if table.name[table.name.length-1] == "s"
-    #   modified_table_name = table.name[0, table.name.length-1].capitalize
-    # else
-    #   modified_table_name = table.name.capitalize
-    # end
-    command_line = "rails generate model " + modified_table_name
-    fields.each do |field|
-      command_line = command_line + " " + field.name + ":" + EQUIVALENCE_TYPE[field.type.to_sym] if field.table == table
+  table_name = table.name[-1] == "s" ? table.name[0, table.name.length-1].capitalize : table.name.capitalize
+  command_line = "rails generate model " + table_name
+  fields.each do |field|
+    if field.table == table && field.name.include?("_id")
+      command_line = command_line + " " + field.name.delete_suffix("_id") + ":references"
+    elsif field.table == table && field.name != "id"
+      command_line = command_line + " " + field.name + ":" + EQUIVALENCE_TYPE[field.type.to_sym]
     end
-    command_line += " \n"
-    puts " "
-    puts command_line
-    shell_rails += command_line
+  end
+  command_line += " \n"
+  puts " "
+  puts command_line
+  shell_rails += command_line
 end
 
 shell_rails += "rails db:create \nrails db:migrate"
