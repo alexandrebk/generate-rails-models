@@ -1,8 +1,8 @@
 require_relative 'models/field'
 require_relative 'models/table'
 require_relative 'db/equivalence'
-# require 'awesome_print'
-# require 'pry'
+require 'awesome_print'
+require 'pry'
 # binding.pry # to start debugging
 
 def read_files(path)
@@ -61,8 +61,8 @@ tables.each do |table|
   command_line = "rails generate scaffold " + table_name
   fields.each do |field|
     if field.table == table && field.name.include?("_id")
-      command_line += " " + field.name.slice(0..-4) + ":references"
-      # add_references += "rails g migration AddUserToUploads user:references"
+      # command_line += " " + field.name.slice(0..-4) + ":references"
+      add_references += "rails generate migration Add" + field.name.slice(0..-4).capitalize + "To" + table_name + " " + field.name.slice(0..-4) + ":references \n"
     elsif field.table == table && field.name != "id"
       command_line += " " + field.name + ":" + EQUIVALENCE_TYPE[field.type.to_sym]
     end
@@ -73,7 +73,7 @@ tables.each do |table|
   shell_rails += command_line
 end
 
-shell_rails += "rails db:create \nrails db:migrate"
+shell_rails += add_references + "rails db:create \nrails db:migrate"
 
 write_output(shell_rails, "#{File.dirname(__FILE__)}/rails.sh")
 
