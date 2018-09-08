@@ -53,17 +53,18 @@ end
 # Use the 'tables' and 'fields' array to build models in language for Rails
 # command_line will contain the Rails command
 
-shell_rails = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
-
+shell_rails    = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
+add_references = ""
 tables.each do |table|
   # Table name should be transformed to have upper first letter and no "s" at the end
-  table_name = table.name[-1] == "s" ? table.name[0, table.name.length-1].capitalize : table.name.capitalize
-  command_line = "rails generate model " + table_name
+  table_name   = table.name[-1] == "s" ? table.name[0, table.name.length-1].capitalize : table.name.capitalize
+  command_line = "rails generate scaffold " + table_name
   fields.each do |field|
     if field.table == table && field.name.include?("_id")
-      command_line = command_line + " " + field.name.delete_suffix("_id") + ":references"
+      command_line += " " + field.name.slice(0..-4) + ":references"
+      # add_references += "rails g migration AddUserToUploads user:references"
     elsif field.table == table && field.name != "id"
-      command_line = command_line + " " + field.name + ":" + EQUIVALENCE_TYPE[field.type.to_sym]
+      command_line += " " + field.name + ":" + EQUIVALENCE_TYPE[field.type.to_sym]
     end
   end
   command_line += " \n"
