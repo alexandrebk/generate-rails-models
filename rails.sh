@@ -1,5 +1,5 @@
-rails new notre-nouveau-projet 
-cd notre-nouveau-projet 
+rails new awesome_app 
+cd awesome_app 
 git init 
 git add . 
 git commit -m 'my first commit' 

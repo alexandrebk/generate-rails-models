@@ -5,6 +5,10 @@ require 'awesome_print'
 require 'pry'
 # binding.pry # to start debugging
 
+puts "What name would you like for your new project?"
+print "> "
+project_name = gets.chomp
+
 def read_files(path)
   File.read(path)
 end
@@ -53,8 +57,9 @@ end
 # Use the 'tables' and 'fields' array to build models in language for Rails
 # command_line will contain the Rails command
 
-shell_rails    = "rails new notre-nouveau-projet \ncd notre-nouveau-projet \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
-add_references = ""
+shell_rails    = "rails new " + project_name + " \ncd " + project_name + " \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
+add_references = String.new
+
 tables.each do |table|
   # Table name should be transformed to have upper first letter and no "s" at the end
   table_name   = table.name[-1] == "s" ? table.name[0, table.name.length-1].capitalize : table.name.capitalize
