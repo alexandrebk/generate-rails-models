@@ -8,6 +8,9 @@ require 'pry'
 puts "What name would you like for your new project?"
 print "> "
 project_name = gets.chomp
+puts "Do you want to use Devise for your user ?"
+print " Y for Yes and N for No > "
+devise = gets.chomp == "Y" ? "devise.rb " : "minimal.rb "
 
 def read_files(path)
   File.read(path)
@@ -57,7 +60,9 @@ end
 # Use the 'tables' and 'fields' array to build models in language for Rails
 # command_line will contain the Rails command
 
-shell_rails    = "rails new " + project_name + " \ncd " + project_name + " \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
+rails_new      = "rails new --database postgresql --webpack -m https://raw.githubusercontent.com/lewagon/rails-templates/master/"
+
+shell_rails    = rails_new + devise + project_name + " \ncd " + project_name + " \ngit init \ngit add . \ngit commit -m 'my first commit' \nhub create \n"
 add_references = String.new
 
 tables.each do |table|

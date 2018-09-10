@@ -1,5 +1,5 @@
-rails new aweome_app 
-cd aweome_app 
+rails new --database postgresql --webpack -m https://raw.githubusercontent.com/lewagon/rails-templates/master/devise.rb awesome_app 
+cd awesome_app 
 git init 
 git add . 
 git commit -m 'my first commit' 
