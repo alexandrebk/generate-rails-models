@@ -19,5 +19,15 @@ Setup :
 
 To Do List
 
-* Attention à toujours créer en 1er la table qui n'a pas de clés étrangères.
-* Et il faut créer les has many tout seul dans les references il ne le fait pas tout seul
+
+* Attention il faut créer les has many tout seul dans les references il ne le fait pas tout seul.
+On peut utiliser la commande ci-dessous pour réécrire du code.
+
+
+```bash
+cat <<EOF >nom_du_fichier
+bla bla
+...
+bla bla
+EOF
+```
