@@ -12,16 +12,6 @@ puts "Do you want to use Devise for your user ?"
 print " Y for Yes and N for No > "
 devise = gets.chomp == "Y" ? "devise.rb " : "minimal.rb "
 
-def read_files(path)
-  File.read(path)
-end
-
-def write_output(output, path)
-  File.open(path, 'wb') do |file|
-    file.write(output)
-  end
-end
-
 # 1st part
 # Analyze the input text in order to find tables and fields
 # Description of tables and fields will be put in arrays 'tables' (objects Table) and 'fields' (objects Field)
@@ -46,7 +36,6 @@ tables_content.each do |table_content|
       fields << Field.new(field_name, tables[-1], field_type)
     end
 end
-
 
 # Print Tables:
 tables.each do |table|
@@ -91,3 +80,17 @@ write_output(shell_rails, "#{File.dirname(__FILE__)}/rails.sh")
 # $ rails generate migration AddPartNumberToProducts part_number:string
 # ou : $ rails generate migration AddDetailsToProducts part_number:string price:decimal
 # $ rails generate migration RemovePartNumberFromProducts part_number:string
+
+
+BEGIN {
+  # Global initialization code goes here
+  def read_files(path)
+    File.read(path)
+  end
+
+  def write_output(output, path)
+    File.open(path, 'wb') do |file|
+      file.write(output)
+    end
+  end
+}
